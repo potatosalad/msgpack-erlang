@@ -1,27 +1,38 @@
+/**
+ * MessagePack for Erlang
+ *
+ * Copyright (C) 2013 UENISHI Kota
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ **/
+
 #include "msgpack_nif.h"
-#include "msgpack.h"
-#include "erl_nif.h"
 
-static ERL_NIF_TERM msgpack_object2erlang_term(ErlNifEnv*,
-                                               const msgpack_object*);
-static bool msgpack_pack_erl_nif_term(msgpack_packer*,
-                                      ErlNifEnv*,
-                                      ERL_NIF_TERM);
-
-
-static inline ERL_NIF_TERM msgpack_error_reason(ErlNifEnv* env,
-                                                ERL_NIF_TERM reason)
+inline ERL_NIF_TERM msgpack_error_reason(ErlNifEnv* env,
+                                         ERL_NIF_TERM reason)
 {
   ERL_NIF_TERM e;
   enif_make_existing_atom(env, "error", &e, ERL_NIF_LATIN1);
   return enif_make_tuple2(env, e, reason);
 }
-static inline ERL_NIF_TERM msgpack_error_tuple(ErlNifEnv* env, const char* atom)
+
+inline ERL_NIF_TERM msgpack_error_tuple(ErlNifEnv* env, const char* atom)
 {
   ERL_NIF_TERM v = enif_make_atom(env, atom);
   return msgpack_error_reason(env, v);
 }
-static inline ERL_NIF_TERM msgpack_make_badarg(ErlNifEnv* env,
+
+inline ERL_NIF_TERM msgpack_make_badarg(ErlNifEnv* env,
                                                ERL_NIF_TERM badarg)
 {
   ERL_NIF_TERM v = enif_make_atom(env, "badarg");
@@ -29,13 +40,16 @@ static inline ERL_NIF_TERM msgpack_make_badarg(ErlNifEnv* env,
 }
 
 
-static inline ERL_NIF_TERM msgpack_nif_empty_binary(ErlNifEnv* env){
+inline ERL_NIF_TERM msgpack_nif_empty_binary(ErlNifEnv* env)
+{
   ErlNifBinary empty;
   enif_alloc_binary(0, &empty);
   return enif_make_binary(env, &empty);
 }
-static inline ERL_NIF_TERM msgpack_nif_binary(ErlNifEnv* env, size_t s,
-                                              const char* bin){
+
+inline ERL_NIF_TERM msgpack_nif_binary(ErlNifEnv* env, size_t s,
+                                       const char* bin)
+{
   ErlNifBinary nif_bin;
   enif_alloc_binary(s, &nif_bin);
   memcpy(nif_bin.data, bin, s);
