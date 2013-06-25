@@ -2,7 +2,7 @@
 
 REBAR=./rebar
 
-all: compile
+all: deps compile
 
 # for busy typos
 m: all
